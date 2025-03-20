@@ -1,0 +1,284 @@
+.aspx page ==> Inner griedView bind code
+
+<%@ Page Title="" Language="C#" MasterPageFile="~/GLR4.master" AutoEventWireup="true" CodeFile="UPolicyWithoutQuoteNo.aspx.cs" Inherits="UPolicyWithoutQuoteNo" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
+    <style type="text/css">
+         body
+         {
+             font-family: Arial;
+             font-size: 10pt;
+         }
+           #dvcolmd9
+         {
+             max-width:100% !important;
+         }
+</style>
+
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <%--<script src="https://code.jquery.com/jquery-1.12.4.js"></script>--%>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            BindDate();
+        });
+        function BindDate() {
+            $(".dateclass").datepicker({
+                //            showOn: "button",
+                //            dateFormat: "dddd, MMMM dd, yyyy",
+                //            buttonImage: "Scripts/calendar.gif",
+                //            buttonImageOnly: true
+
+                maxDate: new Date(),
+                changeMonth: true,
+                changeYear: true,
+                yearRange: '1900:' + new Date().getFullYear().toString()
+            });
+
+            $(".dateclass").keyup(function () {
+                if ($(this).val().length == 2) {
+                    $(this).val($(this).val() + "/");
+                } else if ($(this).val().length == 5) {
+                    $(this).val($(this).val() + "/");
+                }
+            });
+        }
+
+        function openModal(msg) {
+            var d = document.getElementById("msgDiv");
+            d.innerHTML = msg;
+            $("#dialog").dialog({
+                modal: true,
+                buttons: {
+                    Close: function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+        }
+    </script>
+    <script type="text/javascript">
+        $("[src*=plus]").live("click", function () {
+            $(this).closest("tr").after("<tr><td></td><td colspan = '999'>" + $(this).next().html() + "</td></tr>")
+            $(this).attr("src", "images/minus.png");
+        });
+        $("[src*=minus]").live("click", function () {
+            $(this).attr("src", "images/plus.png");
+            $(this).closest("tr").next().remove();
+        });
+
+    </script>
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="maincontent" runat="Server">
+    <h1>Policies Without Quote # </h1>
+    <br />
+
+    <div style="background-color: #fbfb9a; padding: 5px; color: #4f4f88">
+        <strong><u>Trigger:</u>
+            <li>New Business Policies</li>
+            <li>After 1 November 2024</li>
+        </strong>
+        <br />
+        <strong></strong>
+    </div>
+    <br />
+    <asp:GridView ID="grdPolicies" Font-Size="Small" runat="server" CellPadding="4" ForeColor="#333333"
+        Width="1300px" GridLines="None" CssClass="Grid" AutoGenerateColumns="false" OnRowDataBound="grdPolicies_Onrowdatabound" 
+        OnRowCommand="grdPolicies_OnRowCommand" AlternatingRowStyle-BackColor="#ffcccc">
+        <FooterStyle BackColor="#507CD1" Font-Bold="True" ForeColor="White" />
+        <RowStyle BackColor="#ffcccc" />
+        <EditRowStyle BackColor="#2461BF" />
+        <SelectedRowStyle BackColor="#D1DDF1" Font-Bold="True" ForeColor="#333333" />
+        <PagerStyle BackColor="#2461BF" ForeColor="White" HorizontalAlign="Center" />
+        <HeaderStyle BackColor="#507CD1" Font-Bold="True" ForeColor="White" />
+        <AlternatingRowStyle BackColor="White" />
+        <Columns>
+            <asp:TemplateField HeaderText="Sr.No">
+                <ItemTemplate>
+                    <%# Container.DataItemIndex + 1 %>
+                </ItemTemplate>
+            </asp:TemplateField>
+
+            <asp:TemplateField>
+                <ItemTemplate>
+                    <img alt="" style="cursor: pointer; max-width: none" src="images/plus.png" />
+                    <asp:Panel ID="pnlSubReport" runat="server" Style="display: none; background: inherit">
+                        <asp:GridView ID="grdSubReport" Width="100%" CellSpacing="5" CellPadding="5" runat="server"
+                            AutoGenerateColumns="false" CssClass="ChildGrid">
+                            <HeaderStyle BackColor="#507CD1" Font-Bold="True" ForeColor="White" />
+                            <RowStyle BackColor="Beige" />
+                            <AlternatingRowStyle BackColor="Lavender" />
+                            <Columns>
+                                <asp:TemplateField HeaderText="#">
+                                    <HeaderStyle HorizontalAlign="Center" />
+                                    <ItemStyle HorizontalAlign="Center" />
+                                    <ItemTemplate>
+                                        <%# Container.DataItemIndex + 1 %>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+
+                                <asp:TemplateField HeaderText="Quotes Id">
+                                    <HeaderStyle HorizontalAlign="Center" />
+                                    <ItemStyle HorizontalAlign="Center" />
+                                    <ItemTemplate>
+                                    <%#Eval("CodeNo")%>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+
+                                <asp:TemplateField HeaderText="Name Insured">
+                                    <HeaderStyle HorizontalAlign="Center" />
+                                    <ItemTemplate>
+                                        <%#Eval("Name")%>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Address">
+                                    <HeaderStyle HorizontalAlign="Center" />
+                                    <ItemStyle HorizontalAlign="Center" />
+                                    <ItemTemplate>
+                                        <%#Eval("Address")%>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                            </Columns>
+                        </asp:GridView>
+                    </asp:Panel>
+                </ItemTemplate>
+            </asp:TemplateField>
+
+            <asp:TemplateField HeaderText="Policy #">
+                <ItemTemplate>
+                    <%# Eval("policy")%>
+                    <asp:HiddenField ID="hdnPolno" runat="server" Value='<%# Eval("policy")%>' />
+
+                </ItemTemplate>
+            </asp:TemplateField>
+            <asp:TemplateField HeaderText="Edition" ItemStyle-HorizontalAlign="Center">
+                <ItemTemplate>
+                    <%# Eval("edition")%>
+                    <asp:HiddenField ID="hdnEd" runat="server" Value='<%# Eval("edition")%>' />
+                </ItemTemplate>
+            </asp:TemplateField>
+            <asp:TemplateField HeaderText="Effective Date">
+                <ItemTemplate>
+                    <%# Eval("effective_date")%>
+                </ItemTemplate>
+            </asp:TemplateField>
+
+            <asp:TemplateField HeaderText="Program">
+                <ItemTemplate>
+                    <%# Eval("program")%>
+                </ItemTemplate>
+            </asp:TemplateField>
+            <asp:TemplateField HeaderText="Agent">
+                <ItemTemplate>
+                    <%# Eval("producer_name")%>
+                </ItemTemplate>
+            </asp:TemplateField>
+            <asp:TemplateField HeaderText="Name Insured">
+                <ItemTemplate>
+                    <%# Eval("name_insured")%>
+                </ItemTemplate>
+            </asp:TemplateField>
+            <asp:TemplateField HeaderText="Quote #">
+                <ItemTemplate>
+                    <asp:TextBox ID="txtQuote" runat="server"></asp:TextBox>
+                </ItemTemplate>
+            </asp:TemplateField>
+            <asp:TemplateField HeaderText="Action">
+                <ItemTemplate>
+                    <asp:Button ID="btnSubmit" runat="server" Text="Update Quote in Policy" CommandArgument='<%# Eval("policy") %>'
+                        CommandName="UpdateQuoteNo" class="small darkblue button" />
+                </ItemTemplate>
+            </asp:TemplateField>
+
+        </Columns>
+    </asp:GridView>
+</asp:Content>
+<asp:Content ID="Content3" ContentPlaceHolderID="ContactInfoPH" runat="Server">
+</asp:Content>
+<asp:Content ID="Content4" ContentPlaceHolderID="regularAgentsPH" runat="Server">
+</asp:Content>
+
+
+
+
+.cs page 
+
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using BusinessTier;
+using DataAccessTier;
+
+public partial class UPolicyWithoutQuoteNo : System.Web.UI.Page
+{
+    GetGLRData getGLRData = new GetGLRData();
+    protected void Page_Load(object sender, EventArgs e)
+    {
+
+
+        if (!IsPostBack)
+        {
+            FillGrid();
+
+        }
+    }
+
+    private void FillGrid()
+    {
+
+        IOQuotes.Quotes commisionObj = new IOQuotes.Quotes();
+        var dt = commisionObj.GetPoliciesWithoutQuoteNo();
+        grdPolicies.DataSource = dt;
+        grdPolicies.DataBind();
+
+
+    }
+
+    protected void grdPolicies_OnRowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        if (e.CommandName == "UpdateQuoteNo")
+        {
+            //Button btn = (Button)sender;
+            //GridViewRow row = (GridViewRow)btn.NamingContainer;
+            GridViewRow row = (GridViewRow)(((Button)(e.CommandSource)).NamingContainer);
+
+            HiddenField hdnPolno = (HiddenField)row.FindControl("hdnPolno");
+            HiddenField hdnEd = (HiddenField)row.FindControl("hdnEd");
+            TextBox txtQuote = (TextBox)row.FindControl("txtQuote");           
+
+           
+            IOQuotes.Quotes commisionObj = new IOQuotes.Quotes();
+
+            //commisionObj.UpdateQuoteNoInPolicy(hdnPolno.Value, txtQuote.Text);
+
+            FillGrid();
+        }
+      
+    }
+
+    protected void grdPolicies_Onrowdatabound(object sender, GridViewRowEventArgs e)
+    {
+        if (e.Row.RowType == DataControlRowType.DataRow)
+        {
+             var rowView = (DataRowView)e.Row.DataItem;
+
+            // Check if the field exists in the DataRowView
+            string programCode = rowView["program_code"].ToString();  // Check if this exists in your result set
+            string producerName = rowView["name_insured"].ToString();
+            string producerCode = rowView["producer_code"].ToString();
+
+            GridView grdSubReport = (GridView)(e.Row.FindControl("grdSubReport"));
+            
+            Button btnSubmit = (Button)e.Row.FindControl("btnSubmit");
+            btnSubmit.OnClientClick = "return confirm('Policy # " + DataBinder.Eval(e.Row.DataItem, "policy") + " are you sure you want to add quote #?');";
+            var dt = getGLRData.GetQuotesdataPolicy(programCode, producerName, producerCode);
+            //DataTable dtList = dt;
+            grdSubReport.DataSource = dt;
+            grdSubReport.DataBind();
+        }
+    }
+}
